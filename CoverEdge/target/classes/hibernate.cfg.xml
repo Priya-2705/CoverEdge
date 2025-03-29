@@ -14,6 +14,8 @@
         <mapping class="com.humber.model.Customer"/>
         <mapping class="com.humber.model.Policy"/>
         <mapping class="com.humber.model.Broker"/>
+        <mapping class="com.humber.model.BaseRate"/>
+		<mapping class="com.humber.model.TermFactor"/>
         
     </session-factory>
 </hibernate-configuration>

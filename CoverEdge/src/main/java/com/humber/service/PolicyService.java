@@ -26,8 +26,4 @@ public class PolicyService {
     public synchronized void deletePolicy(int id) {
         policyRepository.deletePolicy(id);
     }
-    
-    public synchronized void savePolicies(List<Policy> policies) {
-        policyRepository.savePolicies(policies);
-    }
 }
