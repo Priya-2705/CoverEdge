@@ -10,10 +10,10 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Entity Mapping -->
-        <mapping class="com.insurancebroker.model.Claim"/>
-        <mapping class="com.insurancebroker.model.Customer"/>
-        <mapping class="com.insurancebroker.model.Policy"/>
-        <mapping class="com.insurancebroker.model.Broker"/>
+        <mapping class="com.humber.model.Claim"/>
+        <mapping class="com.humber.model.Customer"/>
+        <mapping class="com.humber.model.Policy"/>
+        <mapping class="com.humber.model.Broker"/>
         
     </session-factory>
 </hibernate-configuration>

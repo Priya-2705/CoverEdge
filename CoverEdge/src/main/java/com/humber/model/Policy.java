@@ -1,120 +1,150 @@
 package com.humber.model;
 
-import java.sql.Date;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.util.Date;
 
 @Entity
+@Table(name = "policies")
 public class Policy {
-    
+    public enum PolicyType { HEALTH, AUTO, HOME, LIFE }
+    public enum PolicyStatus { ACTIVE, EXPIRED, CANCELLED }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "policy_id")
     private int policyId;
-    private int customerId;
+
+    @Column(name = "policy_number", unique = true)
     private String policyNumber;
-    private String policyType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "policy_type")
+    private PolicyType policyType;
+
+    @Column(name = "coverage_amount")
     private double coverageAmount;
+
+    @Column(name = "premium_amount")
     private double premiumAmount;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "start_date")
     private Date startDate;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "end_date")
     private Date endDate;
-    private String policyStatus;
-    private int brokerAssigned;
-    private String brokerAssignedEmail;
 
-    // Default constructor
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "policy_status")
+    private PolicyStatus policyStatus;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "broker_id")
+    private Broker broker;
+
+    // Constructors
     public Policy() {
+    	
     }
+    
+	public Policy(int policyId, String policyNumber, PolicyType policyType, double coverageAmount, double premiumAmount,
+			Date startDate, Date endDate, Customer customer, PolicyStatus policyStatus, Broker broker) {
+		super();
+		this.policyId = policyId;
+		this.policyNumber = policyNumber;
+		this.policyType = policyType;
+		this.coverageAmount = coverageAmount;
+		this.premiumAmount = premiumAmount;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.customer = customer;
+		this.policyStatus = policyStatus;
+		this.broker = broker;
+	}
 
-    // Getters and Setters
-    public int getPolicyId() {
-        return policyId;
-    }
+	// Getters and Setters
+	public int getPolicyId() {
+		return policyId;
+	}
 
-    public void setPolicyId(int policyId) {
-        this.policyId = policyId;
-    }
+	public void setPolicyId(int policyId) {
+		this.policyId = policyId;
+	}
 
-    public int getCustomerId() {
-        return customerId;
-    }
+	public String getPolicyNumber() {
+		return policyNumber;
+	}
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
+	public void setPolicyNumber(String policyNumber) {
+		this.policyNumber = policyNumber;
+	}
 
-    public String getPolicyNumber() {
-        return policyNumber;
-    }
+	public PolicyType getPolicyType() {
+		return policyType;
+	}
 
-    public void setPolicyNumber(String policyNumber) {
-        this.policyNumber = policyNumber;
-    }
+	public void setPolicyType(PolicyType policyType) {
+		this.policyType = policyType;
+	}
 
-    public String getPolicyType() {
-        return policyType;
-    }
+	public double getCoverageAmount() {
+		return coverageAmount;
+	}
 
-    public void setPolicyType(String policyType) {
-        this.policyType = policyType;
-    }
+	public void setCoverageAmount(double coverageAmount) {
+		this.coverageAmount = coverageAmount;
+	}
 
-    public double getCoverageAmount() {
-        return coverageAmount;
-    }
+	public double getPremiumAmount() {
+		return premiumAmount;
+	}
 
-    public void setCoverageAmount(double coverageAmount) {
-        this.coverageAmount = coverageAmount;
-    }
+	public void setPremiumAmount(double premiumAmount) {
+		this.premiumAmount = premiumAmount;
+	}
 
-    public double getPremiumAmount() {
-        return premiumAmount;
-    }
+	public Date getStartDate() {
+		return startDate;
+	}
 
-    public void setPremiumAmount(double premiumAmount) {
-        this.premiumAmount = premiumAmount;
-    }
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
 
-    public Date getStartDate() {
-        return startDate;
-    }
+	public Date getEndDate() {
+		return endDate;
+	}
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 
-    public Date getEndDate() {
-        return endDate;
-    }
+	public Customer getCustomer() {
+		return customer;
+	}
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 
-    public String getPolicyStatus() {
-        return policyStatus;
-    }
+	public PolicyStatus getPolicyStatus() {
+		return policyStatus;
+	}
 
-    public void setPolicyStatus(String policyStatus) {
-        this.policyStatus = policyStatus;
-    }
+	public void setPolicyStatus(PolicyStatus policyStatus) {
+		this.policyStatus = policyStatus;
+	}
 
-    public int getBrokerAssigned() {
-        return brokerAssigned;
-    }
+	public Broker getBroker() {
+		return broker;
+	}
 
-    public void setBrokerAssigned(int brokerAssigned) {
-        this.brokerAssigned = brokerAssigned;
-    }
-
-    public String getBrokerAssignedEmail() {
-        return brokerAssignedEmail;
-    }
-
-    public void setBrokerAssignedEmail(String brokerAssignedEmail) {
-        this.brokerAssignedEmail = brokerAssignedEmail;
-    }
+	public void setBroker(Broker broker) {
+		this.broker = broker;
+	}
 }

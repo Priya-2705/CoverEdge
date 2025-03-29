@@ -1,34 +1,53 @@
 package com.humber.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
+import java.util.Date;
 
 @Entity
+@Table(name = "claims")
 public class Claim {
+    public enum ClaimStatus { 
+        PENDING, 
+        APPROVED, 
+        REJECTED 
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
+
+    @Column(length = 1000)
     private String description;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private ClaimStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
-
-    @ManyToOne
-    @JoinColumn(name = "policy_id", nullable = false)
+    @JoinColumn(name = "policy_id")
     private Policy policy;
 
-    // Getters and setters
-    public Long getId() {
+    @Column(name = "date_submitted")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateSubmitted;
+
+    // Constructors
+    public Claim() {
+        // Default constructor required by Hibernate
+    }
+
+    public Claim(String description, ClaimStatus status, Policy policy, Date dateSubmitted) {
+        this.description = description;
+        this.status = status;
+        this.policy = policy;
+        this.dateSubmitted = dateSubmitted;
+    }
+
+    // Getters and Setters
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -40,20 +59,12 @@ public class Claim {
         this.description = description;
     }
 
-    public String getStatus() {
+    public ClaimStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ClaimStatus status) {
         this.status = status;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
     }
 
     public Policy getPolicy() {
@@ -62,5 +73,24 @@ public class Claim {
 
     public void setPolicy(Policy policy) {
         this.policy = policy;
+    }
+
+    public Date getDateSubmitted() {
+        return dateSubmitted;
+    }
+
+    public void setDateSubmitted(Date dateSubmitted) {
+        this.dateSubmitted = dateSubmitted;
+    }
+
+    @Override
+    public String toString() {
+        return "Claim{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", policy=" + (policy != null ? policy.getPolicyId() : "null") +
+                ", dateSubmitted=" + dateSubmitted +
+                '}';
     }
 }
