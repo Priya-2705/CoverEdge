@@ -84,18 +84,6 @@
 					        </select>
 					    </div>
 					 </div>
-					<div class="alert alert-info">
-					    <h5>Debug Info:</h5>
-					    <p>Brokers in list: ${fn:length(brokers)}</p>
-					    <c:forEach items="${brokers}" var="broker">
-					        <p>Broker ${broker.id}: ${broker.name}</p>
-					    </c:forEach>
-					    <p>Current Policy Broker: 
-					        <c:if test="${not empty policy.broker}">
-					            ${policy.broker.id} - ${policy.broker.name}
-					        </c:if>
-					    </p>
-					</div>
                 </div>
                 
                 <div class="mt-4">

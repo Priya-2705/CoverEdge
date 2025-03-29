@@ -12,9 +12,10 @@
 	    <div>
 	        <a href="policies?action=new" class="btn btn-success">+ Add Policy</a>
 	        <a href="quote" class="btn btn-info ms-2">Get Quote</a>
+	        <a href="policies?action=renew" class="btn btn-warning ms-2">Renew Policies</a>
+	        <a href="policies?action=cancel" class="btn btn-danger ms-2">Cancel Policy</a>
 	    </div>
 	</div>
-    
     <table class="table table-hover table-striped">
         <thead class="table-dark">
             <tr>
@@ -34,12 +35,16 @@
                     <td>${policy.policyType}</td>
                     <td><fmt:formatNumber value="${policy.coverageAmount}" type="currency"/></td>
                     <td>
-                        <span class="badge 
-                            ${policy.policyStatus == 'ACTIVE' ? 'bg-success' : 
-                              policy.policyStatus == 'EXPIRED' ? 'bg-danger' : 'bg-warning'}">
-                            ${policy.policyStatus}
-                        </span>
-                    </td>
+					    <span class="badge 
+					        ${policy.policyStatus == 'ACTIVE' ? 'bg-success' : 
+					          policy.policyStatus == 'EXPIRED' ? 'bg-danger' : 
+					          'bg-secondary'}">
+					        ${policy.policyStatus}
+					    </span>
+					    <c:if test="${policy.policyStatus == 'CANCELLED'}">
+					        <br><small>Reason: ${policy.cancellationReason}</small>
+					    </c:if>
+					</td>
                     <td>
                         <a href="policies?action=edit&id=${policy.policyId}" 
                            class="btn btn-sm btn-warning">Edit</a>

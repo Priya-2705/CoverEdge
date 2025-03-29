@@ -2,6 +2,8 @@ package com.humber.service;
 
 import com.humber.model.Claim;
 import com.humber.repository.ClaimRepository;
+
+import java.util.Date;
 import java.util.List;
 
 public class ClaimService {
@@ -17,5 +19,9 @@ public class ClaimService {
 
     public synchronized void updateClaimStatus(int claimId, String status) {
         claimRepository.updateClaimStatus(claimId, status);
+    }
+    
+    public List<Claim> getClaimsByPolicy(int policyId, Date startDate, Date endDate, String status) {
+        return claimRepository.getClaimsByPolicy(policyId, startDate, endDate, status);
     }
 }

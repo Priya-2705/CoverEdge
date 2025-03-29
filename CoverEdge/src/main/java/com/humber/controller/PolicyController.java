@@ -11,6 +11,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -44,6 +45,18 @@ public class PolicyController extends HttpServlet {
                 case "delete":
                     deletePolicy(request, response);
                     break;
+                case "renew":
+                    showRenewPolicies(request, response);
+                    break;
+                case "renewform":
+                    showRenewalForm(request, response);
+                    break;
+                case "cancel":
+                    showCancelForm(request, response);
+                    break;
+                case "docancel":
+                    processCancellation(request, response);
+                    break;
                 default:
                     listPolicies(request, response);
             }
@@ -61,6 +74,10 @@ public class PolicyController extends HttpServlet {
                 savePolicy(request, response);
             } else if ("update".equals(action)) {
                 updatePolicy(request, response);
+            } else if ("renew".equals(action)) {
+                processRenewal(request, response);
+            } else if ("docancel".equals(action)) {
+                processCancellation(request, response);
             }
         } catch (Exception ex) {
             throw new ServletException(ex);
@@ -138,5 +155,91 @@ public class PolicyController extends HttpServlet {
         int customerId = Integer.parseInt(request.getParameter("customerId"));
         Customer customer = customerService.getCustomer(customerId);
         policy.setCustomer(customer);
+    }
+    
+    private void showRenewPolicies(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("policies", policyService.getRenewablePolicies());
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/renewPolicies.jsp");
+        dispatcher.forward(request, response);
+    }
+
+    private void showRenewalForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            int policyId = Integer.parseInt(request.getParameter("id"));
+            Policy policy = policyService.getPolicy(policyId);
+            
+            if(policy == null) { // Add null check
+                request.setAttribute("error", "Policy not found");
+                showRenewPolicies(request, response);
+                return;
+            }
+            
+            if(!isEligibleForRenewal(policy)) {
+                request.setAttribute("error", "Policy is no longer eligible for renewal");
+                showRenewPolicies(request, response);
+                return;
+            }
+            
+            request.setAttribute("policy", policy);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/renewalForm.jsp");
+            dispatcher.forward(request, response);
+            
+        } catch (NumberFormatException e) {
+            request.setAttribute("error", "Invalid policy ID");
+            showRenewPolicies(request, response);
+        }
+    }
+
+    private void processRenewal(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            int policyId = Integer.parseInt(request.getParameter("policyId"));
+            int renewalTerm = Integer.parseInt(request.getParameter("term"));
+            
+            Policy policy = policyService.getPolicy(policyId);
+            
+            if(!isEligibleForRenewal(policy)) {
+                throw new Exception("Policy is no longer eligible for renewal");
+            }
+            
+            policyService.renewPolicy(policy, renewalTerm);
+            response.sendRedirect("policies?action=renew&success=true");
+            
+        } catch (Exception e) {
+            request.setAttribute("error", "Renewal failed: " + e.getMessage());
+            showRenewPolicies(request, response);
+        }
+    }
+
+    private boolean isEligibleForRenewal(Policy policy) {
+        return policy.getPolicyStatus() == Policy.PolicyStatus.ACTIVE &&
+               policy.getEndDate().after(new Date()); // Not expired yet
+    }
+    
+    private void showCancelForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        List<Policy> activePolicies = policyService.getAllPolicies().stream()
+                .filter(p -> p.getPolicyStatus() == Policy.PolicyStatus.ACTIVE)
+                .toList();
+        request.setAttribute("policies", activePolicies);
+        request.getRequestDispatcher("/cancelPolicy.jsp").forward(request, response);
+    }
+
+    private void processCancellation(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            int policyId = Integer.parseInt(request.getParameter("policyId"));
+            String reason = request.getParameter("reason");
+            
+            policyService.cancelPolicy(policyId, reason);
+            request.setAttribute("success", "Policy cancelled successfully");
+            listPolicies(request, response);
+            
+        } catch (Exception e) {
+            request.setAttribute("error", "Cancellation failed: " + e.getMessage());
+            showCancelForm(request, response);
+        }
     }
 }

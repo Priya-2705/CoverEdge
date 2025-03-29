@@ -34,6 +34,9 @@ public class Policy {
     @Temporal(TemporalType.DATE)
     @Column(name = "end_date")
     private Date endDate;
+    
+    @Column(name = "cancellation_reason", length = 1000)
+    private String cancellationReason;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -146,5 +149,13 @@ public class Policy {
 
 	public void setBroker(Broker broker) {
 		this.broker = broker;
+	}
+
+	public String getCancellationReason() {
+		return cancellationReason;
+	}
+
+	public void setCancellationReason(String cancellationReason) {
+		this.cancellationReason = cancellationReason;
 	}
 }

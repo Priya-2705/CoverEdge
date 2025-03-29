@@ -21,6 +21,18 @@
                         <input type="text" name="policyNumber" class="form-control" required>
                     </div>
                     <div class="col-md-6">
+					    <label class="form-label">Customer</label>
+					    <select name="customerId" class="form-select" required>
+					        <option value="">Select Customer</option>
+					        <c:forEach items="${customers}" var="customer">
+					            <option value="${customer.customerId}" 
+					                ${(not empty policy.customer) && (policy.customer.customerId == customer.customerId) ? 'selected' : ''}>
+					                ${customer.firstName} ${customer.lastName}
+					            </option>
+					        </c:forEach>
+					    </select>
+					</div>
+                    <div class="col-md-6">
 				        <label class="form-label">Policy Type</label>
 				        <select name="policyType" class="form-select" required>
 				            <option value="">Select Type</option>

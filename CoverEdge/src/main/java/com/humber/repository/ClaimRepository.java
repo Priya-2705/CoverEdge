@@ -2,8 +2,17 @@ package com.humber.repository;
 
 import com.humber.model.Claim;
 import com.humber.util.HibernateUtil;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ClaimRepository {
@@ -39,6 +48,35 @@ public class ClaimRepository {
         } catch (Exception e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
+        }
+    }
+    
+    public List<Claim> getClaimsByPolicy(int policyId, Date startDate, Date endDate, String status) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Claim> cq = cb.createQuery(Claim.class);
+            Root<Claim> claim = cq.from(Claim.class);
+            
+            // Mandatory policy filter
+            Predicate policyPredicate = cb.equal(claim.get("policy").get("policyId"), policyId);
+            
+            // Optional date range
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(policyPredicate);
+            
+            if(startDate != null && endDate != null) {
+                predicates.add(cb.between(claim.get("dateSubmitted"), startDate, endDate));
+            }
+            
+            // Optional status filter
+            if(status != null && !status.isEmpty()) {
+                predicates.add(cb.equal(claim.get("status"), Claim.ClaimStatus.valueOf(status)));
+            }
+            
+            cq.where(predicates.toArray(new Predicate[0]));
+            cq.orderBy(cb.desc(claim.get("dateSubmitted")));
+            
+            return session.createQuery(cq).getResultList();
         }
     }
 }
