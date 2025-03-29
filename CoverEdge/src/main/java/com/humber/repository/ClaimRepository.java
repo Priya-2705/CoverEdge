@@ -56,19 +56,18 @@ public class ClaimRepository {
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<Claim> cq = cb.createQuery(Claim.class);
             Root<Claim> claim = cq.from(Claim.class);
+
+            List<Predicate> predicates = new ArrayList<>();
             
             // Mandatory policy filter
-            Predicate policyPredicate = cb.equal(claim.get("policy").get("policyId"), policyId);
+            predicates.add(cb.equal(claim.get("policy").get("policyId"), policyId));
             
-            // Optional date range
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(policyPredicate);
-            
+            // Date range filter
             if(startDate != null && endDate != null) {
                 predicates.add(cb.between(claim.get("dateSubmitted"), startDate, endDate));
             }
             
-            // Optional status filter
+            // Status filter
             if(status != null && !status.isEmpty()) {
                 predicates.add(cb.equal(claim.get("status"), Claim.ClaimStatus.valueOf(status)));
             }

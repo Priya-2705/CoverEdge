@@ -46,6 +46,10 @@
 					    </c:if>
 					</td>
                     <td>
+                    	<a href="policyClaims?policyId=${policy.policyId}&policyNumber=${policy.policyNumber}" 
+					       class="btn btn-info btn-sm">
+					        View Claims
+					    </a>
                         <a href="policies?action=edit&id=${policy.policyId}" 
                            class="btn btn-sm btn-warning">Edit</a>
                         <a href="policies?action=delete&id=${policy.policyId}" 
